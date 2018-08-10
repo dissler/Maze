@@ -313,7 +313,7 @@
 
         #endregion // Initial Setup
 
-        #region Game Setup
+        #region Gameplay
 
         /// <summary>
         /// Starts the maze.
@@ -369,7 +369,7 @@
                     this.pathComplete = true;
 
                     // Be generous and calculate from the last time we were in the entry room before reaching the center
-                    var firstindex = 1;
+                    var firstindex = 0;
                     for (var i = firstindex; i < this.CurrentPath.Count - 1; i++)
                     {
                         if (this.CurrentPath[i].Number == EntranceRoom)
@@ -378,7 +378,7 @@
                         }
                     }
 
-                    var pathLength = this.CurrentPath.Count - 1 - firstindex;
+                    var pathLength = this.CurrentPath.Count - firstindex;
                     this.ShowMessageText = true;
                     this.ShowRoomText = false;
                     this.MessageText =
@@ -420,7 +420,7 @@
             this.Close();
         }
 
-        #endregion // Game Setup
+        #endregion // Gameplay
 
         #region Navigation
 

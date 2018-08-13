@@ -3,6 +3,7 @@
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.CompilerServices;
@@ -16,6 +17,7 @@
     using System.Windows.Media.Imaging;
 
     using Maze.Common;
+    using Maze.Common.Data;
 
     using Path = System.Windows.Shapes.Path;
 
@@ -301,7 +303,7 @@
             }
             else
             {
-                Console.WriteLine($@"Error reading image data, quitting.");
+                Console.WriteLine(@"Error reading image data, quitting.");
                 this.ExitMaze();
             }
         }
@@ -332,7 +334,7 @@
 
             if (!dat.ImageData.Any() || !SerializeObject(dat, DatFile))
             {
-                Console.WriteLine($@"Failed to serialize images, quitting.");
+                Console.WriteLine(@"Failed to serialize images, quitting.");
                 this.ExitMaze();
             }
         }
@@ -477,9 +479,11 @@
             {
                 foreach (var doorMap in room.Doors)
                 {
-                    // For clarity
+                    // For clarity:
                     var imgPath = doorMap.Key;
                     var doorNum = doorMap.Value;
+
+                    var pathColor = Debugger.IsAttached ? Colors.Yellow : Colors.Transparent;
 
                     // Have to do it this way since there's no Geometry.TryParse() !
                     try
@@ -487,7 +491,7 @@
                         var doorPath = new Path
                                            {
                                                Data = Geometry.Parse(imgPath),
-                                               Fill = new SolidColorBrush(Colors.Transparent),
+                                               Fill = new SolidColorBrush(pathColor),
                                                Opacity = 0.25
                                            };
 

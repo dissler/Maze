@@ -4,10 +4,14 @@
     using System.Linq;
 
     /// <summary>
-    /// The doors for each room.
+    /// The doors and corresponding image maps for each room.
     /// </summary>
-    public class RoomDoors
+    public class DoorMaps
     {
+        /// <summary>
+        /// Dictionary of room numbers to doors, which is a dictionary of
+        /// image maps (as path geometries) and the room number being linked to.
+        /// </summary>
         private static readonly Dictionary<int, Dictionary<string, int>> RoomKeys = new Dictionary<int, Dictionary<string, int>>
         {
             {
@@ -275,8 +279,6 @@
                         { "M67,647,146,571,142,138,66,147", 8 },
                         { "M246,498,261,488,261,430,286,404,321,408,322,120,248,132", 40 },
                         { "M607,474,612,498,475,498,549,356,680,361,677,414,707,458,676,453,676,470", 17 },
-                    //{ "M707,358,708,420,737,459,736,470,696,475,682,498,751,498,739,479,751,465,747,419,746,400,765,388,750,357", 17 },
-                    //{ "M772,463,788,476,817,482,781,416,774,425", 17 },
                         { "M706,354,749,356,816,482,791,480,771,468,775,430,755,427,753,467,740,475,750,501,685,498,695,474,736,471,738,460,706,426", 17 },
                         { "M719,123,901,124,903,348,872,347,885,287,872,266,827,257,795,280,785,359,771,373,757,347,742,349,745,314,727,311,728,353,715,352", 35 },
                         { "M976,125,1043,131,1041,463,1026,469,978,435", 2 }
@@ -433,10 +435,11 @@
         #region Methods
 
         /// <summary>
-        /// Gets the room's doors.
+        /// Gets the image map (as path geometry) and the room number
+        /// being linked to for each of the given room's doors.
         /// </summary>
         /// <param name="roomNum">The room number.</param>
-        /// <returns>A dictionary of the room's doors mapped to xaml paths.</returns>
+        /// <returns>A dictionary of the room's doors mapped to path geometry.</returns>
         public static Dictionary<string, int> GetRoomDoors(int roomNum)
         {
             return RoomKeys.FirstOrDefault(k => k.Key == roomNum).Value;

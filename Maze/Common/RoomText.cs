@@ -9,12 +9,68 @@
     {
         #region Fields
 
+        /// <summary>
+        /// A short description for each room.
+        /// </summary>
+        private static readonly Dictionary<int, string> RoomDescriptions = new Dictionary<int, string>
+        {
+            { 0, "Gate" },
+            { 1, "Entrance Hall" },
+            { 2, "Bright Room" },
+            { 3, "Different Room" },
+            { 4, "Great Hall" },
+            { 5, "Tree Room" },
+            { 6, "Gloomy Cave" },
+            { 7, "Pleasant Room" },
+            { 8, "Vaulted Chamber" },
+            { 9, "Old Storeroom" },
+            { 10, "Painted Room" },
+            { 11, "Airy Room" },
+            { 12, "Spacious Room" }, // Same as 28
+            { 13, "Clock Room" },
+            { 14, "Large Room" },
+            { 15, "Sunlit Room" },
+            { 16, "Stone Chamber" },
+            { 17, "Sandy Room" },
+            { 18, "Warm Room" },
+            { 19, "Shaded Portico" }, // Outdoors
+            { 20, "Sitting Room" },
+            { 21, "Topiary Yard" }, // Outdoors
+            { 22, "Gaudy Room" },
+            { 23, "Wood-floored Room" },
+            { 24, "Unlimited Darkness" },
+            { 25, "High Room" },
+            { 26, "Dramatic Room" },
+            { 27, "Darkened Chamber" },
+            { 28, "Spacious Room" }, // Same as 12
+            { 29, "Small Room" },
+            { 30, "Stone-paved Room" },
+            { 31, "Melancholy Courtyard" }, // Outdoors
+            { 32, "Square Room" },
+            { 33, "Floorless Room" },
+            { 34, "Drawing Room" },
+            { 35, "Basement" },
+            { 36, "Ruins" }, // Outdoors
+            { 37, "Open Room" },
+            { 38, "Narrow Room" },
+            { 39, "Wine Cellar" },
+            { 40, "Foundation" },
+            { 41, "Slide Room" },
+            { 42, "Taxidermy Room" },
+            { 43, "Theater Hall" },
+            { 44, "Palm Courtyard" }, // Outside
+            { 45, "Maze Center" }
+        };
+
+        /// <summary>
+        /// The text for each room.
+        /// </summary>
         private static readonly Dictionary<int, string> RoomTexts = new Dictionary<int, string>
         {
             {
                 0,
                 "The Maze." 
-                + "\n\n      I met them at the gate though I usually wait inside. Preoccupied with their own throughts, impatient, like so many children, they didn\'t see who I really was. They never noticed my crown, my pain, the fire in my eyes."
+                + "\n\n      I met them at the gate though I usually wait inside. Preoccupied with their own thoughts, impatient, like so many children, they didn\'t see who I really was. They never noticed my crown, my pain, the fire in my eyes."
                 + "\n      Like all others they think the Maze was made for them; actually, it is the other way around. They think I am some poet who will lead them through the symbols and spaces of this Underworld. They think I will teach them lessons. They should call me Cerberus...I am the lesson." 
                 + "\n      The monstrous walls rise up and run away as far as the human eye can see, circling and dividing. Which half is the Maze?" 
                 + "\n      Even I get lost. It changes - sometimes slowly, imperceptibly... sometimes suddenly. This House is not only made of stone and mortar, wood and paint; it is made of time and mystery, hope and fear. Construction never stops. I take some pride in my role as architect." 
@@ -164,7 +220,7 @@
             {
                 16,
                 "...a stone chamber which reminded me of my old neighbors."
-                + "\n      Of course, that was a long time ago now, but would you believe their decendants are still telling stories about me and my family to their children?"
+                + "\n      Of course, that was a long time ago now, but would you believe their descendants are still telling stories about me and my family to their children?"
                 + "\n      Even if most of the stories are lies and exaggerations, it is immortality of a sort."
                 + "\n      As I passed in front of an open doorway a figure, crossing the hall outside, saw me and immediately ran off."
                 + "\n      \"Who was that?\" they asked."
@@ -237,7 +293,7 @@
             {
                 24,
                 "...a place of unlimited darkness."
-                + "\n      \"Where are the doors?\" they asked nerviously. \"We can\'t see any doors...\""
+                + "\n      \"Where are the doors?\" they asked nervously. \"We can\'t see any doors...\""
                 + "\n      \"Be careful where you step!\" said a cold voice. \"This spot is taken.\" Dozens of eyes blinked at us in the Stygian gloom."
                 + "\n      By the time my uncertain visitors turned to ask me what to do I was already far away."
                 + "\n      \"There are no doors,\" said the voice. \"You are here with the rest of us now...\""
@@ -258,7 +314,8 @@
                 + "\n      \"Which way now, children?\" I asked in my most patronizing voice."
                 + "\n      They objected to my tone, but it distracted them from the real clues. The game usually goes as I plan it, despite the intentions of my visitors, or perhaps because of their intentions."
                 + "\n      \"What the devil is this supposed to be?\" one asked. They gathered around and I realized they were close to something. I quickly picked up the bell, ringing it loudly."
-                + "\n      \"Was this what you heard outside?\"" + "\n      Holding their ears they ran out the door to..."
+                + "\n      \"Was this what you heard outside?\"" 
+                + "\n      Holding their ears they ran out the door to..."
             },
             {
                 27,
@@ -338,7 +395,7 @@
             {
                 35,
                 "...what appeared to be someone\'s basement."
-                + "\n      One of them sank gratefully down on an old couch which prompty collapsed."
+                + "\n      One of them sank gratefully down on an old couch which promptly collapsed."
                 + "\n      I tried to hide my smile."
                 + "\n      \"A totem, or tribal fetish,\" said one, walking around the center of the room."
                 + "\n      \"It could be a work of art,\" suggested another."
@@ -439,18 +496,27 @@
         #region Methods
 
         /// <summary>
+        /// Gets the room's description.
+        /// </summary>
+        /// <param name="roomNum">The room number.</param>
+        /// <returns>The room's description.</returns>
+        public static string GetRoomDesc(int roomNum)
+        {
+            return RoomDescriptions.ContainsKey(roomNum)
+                       ? RoomDescriptions[roomNum] 
+                       : string.Empty;
+        }
+
+        /// <summary>
         /// Gets the room's text.
         /// </summary>
         /// <param name="roomNum">The room number.</param>
         /// <returns>The room's text.</returns>
         public static string GetRoomText(int roomNum)
         {
-            if (RoomTexts.ContainsKey(roomNum))
-            {
-                return RoomTexts[roomNum];
-            }
-
-            return string.Empty;
+            return RoomTexts.ContainsKey(roomNum)
+                       ? RoomTexts[roomNum]
+                       : string.Empty;
         }
 
         #endregion // Methods

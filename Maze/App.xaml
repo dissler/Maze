@@ -2,10 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Maze"
-             xmlns:common="clr-namespace:Maze.Common"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
+        <!-- Converters -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
     </Application.Resources>

@@ -1,0 +1,9 @@
+﻿
+"Maze" (c) 1985 Christopher Manson, ISBN 0805010882
+
+"Riddle of the Maze" (c) 1994 Fathom Pictures (Developer), Interplay (Publisher)
+	Watercolors of Manson's drawings by Hennie Farrow (http://www.einneh.com/)
+
+Audio https://youtu.be/Cecoo06AXYM, h/t http://old.mazecast.com/riddle-of-the-maze-computer-game.php
+
+Android version (c) 2014 Taylor Carrington, Randy Ledbetter, Jayd Saucedo (https://github.com/RandyLedbetter/maze)

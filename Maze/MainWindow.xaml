@@ -153,6 +153,7 @@
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         <Setter Property="Margin" Value="3"/>
                         <Setter Property="Padding" Value="3"/>
+                        <Setter Property="ToolTip" Value="{Binding Description}"/>
                         <Setter Property="VerticalContentAlignment" Value="Center"/>
                         <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>
                         <Style.Triggers>

@@ -32,6 +32,11 @@
         private const string DatFile = "rooms.dat";
 
         /// <summary>
+        /// The current path.
+        /// </summary>
+        private ObservableCollection<MazeRoom> currentPath;
+
+        /// <summary>
         /// The current room.
         /// </summary>
         private MazeRoom currentRoom;
@@ -45,6 +50,11 @@
         /// Whether the path is complete.
         /// </summary>
         private bool pathComplete;
+
+        /// <summary>
+        /// The rooms.
+        /// </summary>
+        private ObservableCollection<MazeRoom> rooms;
 
         /// <summary>
         /// Stores room images as byte arrays.
@@ -76,17 +86,6 @@
             this.CurrentPath = new ObservableCollection<MazeRoom>();
             this.Rooms = new ObservableCollection<MazeRoom>();
 
-            // Attach handlers
-            this.CurrentPath.CollectionChanged += (s, e) => this.RaisePropertyChanged(nameof(this.CurrentPath));
-            this.Rooms.CollectionChanged += (s, e) => this.RaisePropertyChanged(nameof(this.Rooms));
-            this.PropertyChanged += (s, e) =>
-                {
-                    if (e.PropertyName == nameof(this.CurrentRoom))
-                    {
-                        this.OnRoomEntered();
-                    }
-                };
-            
             // Construct rooms
             this.ConstructRooms();
 
@@ -99,9 +98,20 @@
         #region Properties
 
         /// <summary>
-        /// Gets the current path through the maze.
+        /// Gets or sets the current path through the maze.
         /// </summary>
-        public ObservableCollection<MazeRoom> CurrentPath { get; }
+        public ObservableCollection<MazeRoom> CurrentPath
+        {
+            get => this.currentPath;
+            set
+            {
+                if (value != this.currentPath)
+                {
+                    this.currentPath = value;
+                    this.RaisePropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current room.
@@ -116,14 +126,28 @@
                 {
                     this.currentRoom = value;
                     this.RaisePropertyChanged();
+
+                    // Handle game state
+                    this.OnRoomEntered();
                 }
             }
         }
 
         /// <summary>
-        /// Gets the list of rooms.
+        /// Gets or sets the list of rooms.
         /// </summary>
-        public ObservableCollection<MazeRoom> Rooms { get; }
+        public ObservableCollection<MazeRoom> Rooms
+        {
+            get => this.rooms;
+            set
+            {
+                if (value != this.rooms)
+                {
+                    this.rooms = value;
+                    this.RaisePropertyChanged();
+                }
+            }
+        }
 
         #region Display
 
@@ -268,16 +292,17 @@
                 this.roomImages = dat;
                 for (var r = 0; r <= 45; r++)
                 {
-                    var doors = RoomDoors.GetRoomDoors(r);
+                    var desc = RoomText.GetRoomDesc(r);
+                    var doors = DoorMaps.GetRoomDoors(r);
                     var img = this.roomImages.GetRoomImage(r);
                     var txt = RoomText.GetRoomText(r);
-                    this.Rooms.Add(new MazeRoom(r, img, doors, txt));
+                    this.Rooms.Add(new MazeRoom(r, img, doors, txt, desc));
                 }
             }
             else
             {
                 Console.WriteLine($@"Error reading image data, quitting.");
-                this.Close();
+                this.ExitMaze();
             }
         }
 
@@ -305,9 +330,10 @@
                 }
             }
 
-            if (dat.ImageData.Any())
+            if (!dat.ImageData.Any() || !SerializeObject(dat, DatFile))
             {
-                SerializeObject(dat, DatFile);
+                Console.WriteLine($@"Failed to serialize images, quitting.");
+                this.ExitMaze();
             }
         }
 
@@ -410,13 +436,26 @@
         }
 
         /// <summary>
-        /// Exit app.
+        /// Handles exit button.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event arguments.</param>
         private void OnExitButtonClick(object sender, RoutedEventArgs e)
         {
-            // Maybe prompt first
+            this.ExitMaze(allowCancel: true);
+        }
+
+        /// <summary>
+        /// Quits the app.
+        /// </summary>
+        /// <param name="allowCancel">Whether to allow the user to cancel closing the app.</param>
+        private void ExitMaze(bool allowCancel = false)
+        {
+            if (allowCancel)
+            {
+                // Prompt for confirmation
+            }
+
             this.Close();
         }
 
@@ -436,22 +475,32 @@
             // Construct new paths
             if (room?.Doors?.Any() ?? false)
             {
-                foreach (var door in room.Doors)
+                foreach (var doorMap in room.Doors)
                 {
+                    // For clarity
+                    var imgPath = doorMap.Key;
+                    var doorNum = doorMap.Value;
+
                     // Have to do it this way since there's no Geometry.TryParse() !
                     try
                     {
                         var doorPath = new Path
                                            {
-                                               Data = Geometry.Parse(door.Key),
+                                               Data = Geometry.Parse(imgPath),
                                                Fill = new SolidColorBrush(Colors.Transparent),
                                                Opacity = 0.25
                                            };
 
-                        // Don't change cursor for hidden door in room 29
-                        if (!(room.Number == 29 && door.Value == 17))
+                        // Hand cursor, except for hidden door in room 29
+                        if (!(room.Number == 29 && doorNum == 17))
                         {
                             doorPath.Cursor = Cursors.Hand;
+                        }
+
+                        // Add description tooltip if we've visited the room before
+                        if (this.CurrentPath.Any(r => r.Number == doorNum))
+                        {
+                            doorPath.ToolTip = this.Rooms.FirstOrDefault(r => r.Number == doorNum)?.Description;
                         }
 
                         // Add door link
@@ -459,7 +508,7 @@
                             {
                                 if (e.ChangedButton == MouseButton.Left && e.ClickCount == 1)
                                 {
-                                    this.GoToRoom(door.Value);
+                                    this.GoToRoom(doorNum);
                                 }
                             };
 
@@ -475,7 +524,7 @@
         }
 
         /// <summary>
-        /// Sets the current room to a copy of the specified room.
+        /// Sets the current room to a copy of the specified room, so we can handle room revisiting
         /// </summary>
         /// <param name="roomNum">The room number.</param>
         private void GoToRoom(int roomNum)
@@ -517,7 +566,7 @@
         }
 
         /// <summary>
-        /// Scroll to current room. If we're backtracking, remove all subsequent rooms from the path.
+        /// Scroll to current room.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The event arguments.</param>
